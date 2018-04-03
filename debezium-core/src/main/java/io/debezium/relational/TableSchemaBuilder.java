@@ -301,6 +301,14 @@ public class TableSchemaBuilder {
                 mapper.alterFieldSchema(column, fieldBuilder);
             }
             if (column.isOptional()) fieldBuilder.optional();
+
+            // if the default value in ddl is null
+            // or column is optional
+            // or default value is not null, set schema default value
+            if (column.shouldSetDefaultValue()) {
+                fieldBuilder.defaultValue(column.defaultValue());
+            }
+
             builder.field(column.name(), fieldBuilder.build());
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("- field '{}' ({}{}) from column {}", column.name(), builder.isOptional() ? "OPTIONAL " : "",

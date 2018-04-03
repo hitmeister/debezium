@@ -126,6 +126,35 @@ public interface Column extends Comparable<Column> {
      */
     boolean isGenerated();
 
+    /**
+     * Get the default value of the column
+     *
+     * @return the default value
+     */
+    Object defaultValue();
+
+    /**
+     * Determine whether this column's default values is null;
+     * If the default value in ddl is null, we should set field isDefaultValueNull {@code true};
+     *
+     * @return {@code true} if the default values is null, or {@code false} otherwise
+     */
+    boolean isDefaultValueNull();
+
+    /**
+     * Determine whether this column's default value should set at {@link org.apache.kafka.connect.data.ConnectSchema} default value;
+     * If matching any of the below condition, we should return {@code true}
+     *
+     * 1. the default value in ddl is Null;
+     * 2. this column is optional
+     * 3. the default value is not Null;
+     *
+     * @return {@code true} if we need set default in schema, or {@code false} otherwise
+     */
+    default boolean shouldSetDefaultValue() {
+        return isDefaultValueNull() || isOptional() || defaultValue() != null;
+    }
+
     @Override
     default int compareTo(Column that) {
         if (this == that) return 0;
